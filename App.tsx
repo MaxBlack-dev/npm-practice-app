@@ -37,6 +37,8 @@ export default function App() {
   const [showHint, setShowHint] = useState(false);
   const [jumpToTask, setJumpToTask] = useState('');
   const [showJumpInput, setShowJumpInput] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const inputRef = React.useRef<TextInput>(null);
   const jumpInputRef = React.useRef<TextInput>(null);
 
@@ -72,6 +74,68 @@ export default function App() {
   useEffect(() => {
     saveProgress(progress);
   }, [progress]);
+
+  // Update suggestions based on user input
+  useEffect(() => {
+    const input = userInput.trim().toLowerCase();
+    const parts = input.split(/\s+/);
+    
+    // Remove 'npm' if present
+    const commandParts = parts[0] === 'npm' ? parts.slice(1) : parts;
+    
+    if (commandParts.length === 0 || input === '') {
+      // Show common commands when empty
+      setSuggestions(['install', 'init', 'uninstall', 'update', 'run', 'test']);
+    } else if (commandParts.length === 1 && !input.endsWith(' ')) {
+      // Suggest command completions
+      const partial = commandParts[0];
+      const commands = ['install', 'init', 'uninstall', 'update', 'run', 'test', 'start', 'build', 'publish'];
+      const matches = commands.filter(cmd => cmd.startsWith(partial));
+      setSuggestions(matches.length > 0 ? matches : []);
+    } else {
+      // Suggest based on command type and filter by partial input
+      const command = commandParts[0];
+      const lastPart = commandParts[commandParts.length - 1];
+      const isTyping = !input.endsWith(' ');
+      const partial = isTyping ? lastPart : '';
+      
+      let allSuggestions: string[] = [];
+      
+      if (['install', 'i', 'add'].includes(command)) {
+        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '--save-dev', '-D', '--save', '-S', '--save-exact', '-E', '--no-save', '-g', '--global'];
+      } else if (['uninstall', 'remove', 'rm', 'r', 'un', 'unlink'].includes(command)) {
+        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '--save-dev', '-D', '--save', '-S', '-g', '--global'];
+      } else if (['run', 'run-script'].includes(command)) {
+        allSuggestions = ['build', 'test', 'start', 'dev', '--silent'];
+      } else if (['init', 'create'].includes(command)) {
+        allSuggestions = ['-y', '--yes', '--scope'];
+      } else if (['publish'].includes(command)) {
+        allSuggestions = ['--access', '--tag', '--dry-run'];
+      } else if (['config', 'c'].includes(command)) {
+        allSuggestions = ['set', 'get', 'delete', 'list', '-g', '--global'];
+      } else if (['audit'].includes(command)) {
+        allSuggestions = ['--fix', '--json', '--audit-level'];
+      } else if (['outdated'].includes(command)) {
+        allSuggestions = ['-g', '--global', '--json'];
+      } else if (['list', 'ls', 'll', 'la'].includes(command)) {
+        allSuggestions = ['-g', '--global', '--depth', '--json'];
+      } else if (['cache'].includes(command)) {
+        allSuggestions = ['clean', 'verify', '--force', '-f'];
+      } else if (['search', 's', 'se', 'find'].includes(command)) {
+        allSuggestions = ['--long', '--json'];
+      } else if (['view', 'info', 'show'].includes(command)) {
+        allSuggestions = ['--json'];
+      }
+      
+      // Filter suggestions by partial match
+      if (partial) {
+        const filtered = allSuggestions.filter(s => s.toLowerCase().startsWith(partial));
+        setSuggestions(filtered.length > 0 ? filtered : allSuggestions);
+      } else {
+        setSuggestions(allSuggestions);
+      }
+    }
+  }, [userInput]);
 
   useEffect(() => {
     // Focus jump input when shown
@@ -153,6 +217,60 @@ export default function App() {
 
   const stats = getProgressStats(progress);
 
+  const insertSuggestion = (suggestion: string) => {
+    const input = userInput.trim();
+    const parts = input.split(/\s+/);
+    
+    // Remove 'npm' if present for processing
+    const commandParts = parts[0] === 'npm' ? parts.slice(1) : parts;
+    const hasNpmPrefix = parts[0] === 'npm';
+    
+    let newInput = '';
+    
+    // If empty or completing a command name, replace/append
+    if (commandParts.length === 0 || input === '') {
+      newInput = suggestion + ' ';
+    } else if (commandParts.length === 1 && !input.endsWith(' ')) {
+      // Completing command name - replace the partial
+      const prefix = hasNpmPrefix ? 'npm ' : '';
+      newInput = prefix + suggestion + ' ';
+    } else {
+      // Completing parameter or package - replace last partial word if not ending with space
+      if (input.endsWith(' ')) {
+        // Just append
+        newInput = input + suggestion + ' ';
+      } else {
+        // Replace the last partial word
+        const lastSpaceIndex = input.lastIndexOf(' ');
+        const beforeLast = input.substring(0, lastSpaceIndex + 1);
+        newInput = beforeLast + suggestion + ' ';
+      }
+    }
+    
+    setUserInput(newInput);
+    
+    // Refocus input and move cursor to end
+    // Use requestAnimationFrame for smoother mobile experience
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          // For web, set selection to end
+          if (Platform.OS === 'web' && inputRef.current.setSelectionRange) {
+            (inputRef.current as any).setSelectionRange(newInput.length, newInput.length);
+          }
+        }
+      }, Platform.OS === 'web' ? 10 : 50);
+    });
+  };
+
+  const handleTabKey = () => {
+    // If only one suggestion, autocomplete it
+    if (suggestions.length === 1) {
+      insertSuggestion(suggestions[0]);
+    }
+  };
+
   const openBook = () => {
     Linking.openURL('https://www.amazon.com/dp/B0FSX9TZZ1');
   };
@@ -207,35 +325,27 @@ export default function App() {
     setShowHint(false);
   };
 
-  const handleResetProgress = async () => {
-    if (Platform.OS === 'web') {
-      if (window.confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-        const newProgress = await resetProgress();
-        setProgress(newProgress);
-        setUserInput('');
-        setFeedback('');
-        setOutput('');
-        setLastCommand('');
-        setPreviousOutput('');
-        setPreviousCommand('');
-        setPreviousFeedback('');
-        setShowSolution(false);
-        setShowHint(false);
-      }
-    } else {
-      // For mobile, just reset (or implement a custom modal)
-      const newProgress = await resetProgress();
-      setProgress(newProgress);
-      setUserInput('');
-      setFeedback('');
-      setOutput('');
-      setLastCommand('');
-      setPreviousOutput('');
-      setPreviousCommand('');
-      setPreviousFeedback('');
-      setShowSolution(false);
-      setShowHint(false);
-    }
+  const handleResetProgress = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmReset = async () => {
+    setShowResetConfirm(false);
+    const newProgress = await resetProgress();
+    setProgress(newProgress);
+    setUserInput('');
+    setFeedback('');
+    setOutput('');
+    setLastCommand('');
+    setPreviousOutput('');
+    setPreviousCommand('');
+    setPreviousFeedback('');
+    setShowSolution(false);
+    setShowHint(false);
+  };
+
+  const cancelReset = () => {
+    setShowResetConfirm(false);
   };
 
   return (
@@ -256,12 +366,20 @@ export default function App() {
             🏆 Completed {progress.completionCount} {progress.completionCount === 1 ? 'time' : 'times'}
           </Text>
         )}
-        <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
+        <TouchableOpacity 
+          style={styles.resetButton} 
+          onPress={handleResetProgress}
+          activeOpacity={0.7}
+        >
           <Text style={styles.resetButtonText}>🔄 Reset Progress</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.infoCard}>
           <Text style={styles.infoText}>
             📚 New to npm? Learn the fundamentals first!
@@ -362,6 +480,29 @@ export default function App() {
 
             <View style={styles.inputSection}>
               <Text style={styles.label}>Enter your command:</Text>
+              
+              {suggestions.length > 0 && (
+                <View style={styles.suggestionsContainer}>
+                  <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.suggestionsContent}
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.suggestionButton}
+                        onPress={() => insertSuggestion(suggestion)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.suggestionText}>{suggestion}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+              
               <TextInput
                 ref={inputRef}
                 style={styles.input}
@@ -373,6 +514,12 @@ export default function App() {
                 autoCorrect={false}
                 autoFocus={true}
                 onSubmitEditing={handleSubmit}
+                onKeyPress={(e: any) => {
+                  if (Platform.OS === 'web' && e.nativeEvent.key === 'Tab' && suggestions.length === 1) {
+                    e.preventDefault();
+                    handleTabKey();
+                  }
+                }}
               />
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Submit</Text>
@@ -424,6 +571,34 @@ export default function App() {
           </View>
         )}
       </ScrollView>
+
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Reset Progress</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to reset all progress? This cannot be undone.
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.modalButtonCancel]} 
+                onPress={cancelReset}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.modalButtonConfirm]} 
+                onPress={confirmReset}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.modalButtonTextConfirm}>Reset</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -462,7 +637,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
-  },
+    cursor: Platform.OS === 'web' ? 'pointer' : undefined,
+  } as any,
   resetButtonText: {
     color: '#fff',
     fontSize: 12,
@@ -724,6 +900,29 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
+  suggestionsContainer: {
+    marginBottom: 12,
+    maxHeight: 45,
+  },
+  suggestionsContent: {
+    paddingRight: 10,
+    gap: 8,
+  },
+  suggestionButton: {
+    backgroundColor: '#eff6ff',
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginRight: 8,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: '#1e40af',
+    fontWeight: '600',
+    fontFamily: 'monospace',
+  },
   input: {
     backgroundColor: '#f9f9f9',
     borderWidth: 1,
@@ -882,6 +1081,77 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4ade80',
     marginBottom: 10,
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    width: '80%',
+    maxWidth: 400,
+    ...Platform.select({
+      web: {
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 5,
+      },
+    }),
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#4b5563',
+    marginBottom: 24,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#e5e7eb',
+  },
+  modalButtonConfirm: {
+    backgroundColor: '#ef4444',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  modalButtonTextConfirm: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
 });
 
