@@ -157,6 +157,26 @@ export function commandsMatch(
     return { matches: false, reason: 'Invalid command' };
   }
   
+  // Handle npm shortcuts: test, start, stop, restart can be run with or without 'run'
+  const shortcutCommands = ['test', 'start', 'stop', 'restart'];
+  
+  // Check if expected is a shortcut command and actual uses 'npm run <shortcut>'
+  if (shortcutCommands.includes(expected.command?.name || '')) {
+    if (actual.command?.name === 'run' && actual.packageNames.includes(expected.command?.name || '')) {
+      // User typed 'npm run test' when we expected 'npm test' - this is valid
+      return { matches: true };
+    }
+  }
+  
+  // Check if expected is 'npm run <shortcut>' and actual uses the shortcut directly
+  if (expected.command?.name === 'run' && expected.packageNames.length === 1) {
+    const scriptName = expected.packageNames[0];
+    if (shortcutCommands.includes(scriptName) && actual.command?.name === scriptName) {
+      // User typed 'npm test' when we expected 'npm run test' - this is valid
+      return { matches: true };
+    }
+  }
+  
   if (expected.command?.name !== actual.command?.name) {
     return { matches: false, reason: 'Different command' };
   }

@@ -21,6 +21,7 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "expo": "^54.0.25",
     "expo-status-bar": "^3.0.8",
     "react": "19.1.0",

@@ -79,11 +79,12 @@ export const NPM_COMMANDS: NpmCommand[] = [
   {
     name: 'run',
     aliases: ['run-script'],
-    description: 'Run a script from package.json',
+    description: 'List available scripts',
     parameters: [
+      { name: 'build', description: 'Run the build script', requiresValue: false },
       { name: '--silent', description: 'Suppress output', requiresValue: false },
     ],
-    mockOutput: '\n> my-project@1.0.0 start\n> node index.js\n\nHello World!',
+    mockOutput: 'Lifecycle scripts included in my-project@1.0.0:\n  test\n    echo "Error: no test specified"\n  start\n    node index.js\n\nAvailable scripts:\n  build\n    webpack --mode production',
   },
   {
     name: 'test',
@@ -97,6 +98,18 @@ export const NPM_COMMANDS: NpmCommand[] = [
     description: 'Start the application',
     parameters: [],
     mockOutput: '\n> my-project@1.0.0 start\n> node index.js\n\nServer is running on port 3000',
+  },
+  {
+    name: 'stop',
+    description: 'Stop a package',
+    parameters: [],
+    mockOutput: '\n> my-project@1.0.0 stop\n> node stop.js',
+  },
+  {
+    name: 'restart',
+    description: 'Restart a package',
+    parameters: [],
+    mockOutput: '\n> my-project@1.0.0 restart\n> npm stop && npm start',
   },
   {
     name: 'version',
@@ -336,12 +349,6 @@ export const NPM_COMMANDS: NpmCommand[] = [
     mockOutput: 'Opening https://github.com/lodash/lodash in browser',
   },
   {
-    name: 'restart',
-    description: 'Restart a package',
-    parameters: [],
-    mockOutput: '\n> my-project@1.0.0 restart\n> npm stop && npm start',
-  },
-  {
     name: 'root',
     description: 'Display npm root',
     parameters: [
@@ -372,12 +379,6 @@ export const NPM_COMMANDS: NpmCommand[] = [
     description: 'View starred packages',
     parameters: [],
     mockOutput: 'lodash\nexpress\nreact',
-  },
-  {
-    name: 'stop',
-    description: 'Stop a package',
-    parameters: [],
-    mockOutput: '\n> my-project@1.0.0 stop\n> node stop.js',
   },
   {
     name: 'team',
