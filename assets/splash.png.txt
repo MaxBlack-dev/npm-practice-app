@@ -1,2 +1,0 @@
-<!-- Placeholder splash.png - Replace with actual splash screen -->
-This is a placeholder file. Please replace with actual splash.png
