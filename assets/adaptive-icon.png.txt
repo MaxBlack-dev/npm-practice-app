@@ -1,0 +1,2 @@
+<!-- Placeholder adaptive-icon.png - Replace with actual 1024x1024 Android adaptive icon -->
+This is a placeholder file. Please replace with actual adaptive-icon.png (1024x1024)

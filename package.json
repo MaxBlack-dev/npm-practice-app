@@ -1,0 +1,36 @@
+{
+  "name": "npm-practice",
+  "version": "1.0.0",
+  "description": "Interactive npm command learning application",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "npm",
+    "learning",
+    "practice",
+    "cli",
+    "tutorial"
+  ],
+  "author": "MaxBlack-dev",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "expo": "^54.0.25",
+    "expo-status-bar": "^3.0.8",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.10",
+    "babel-preset-expo": "^54.0.7",
+    "typescript": "^5.9.3"
+  }
+}

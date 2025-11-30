@@ -1,0 +1,2 @@
+<!-- Placeholder icon.png - Replace with actual 1024x1024 app icon -->
+This is a placeholder file. Please replace with actual icon.png (1024x1024)
