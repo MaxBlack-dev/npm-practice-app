@@ -15,6 +15,15 @@ import {
   Task,
   UserProgress,
 } from './src/core';
+import {
+  initializeAnalytics,
+  logTaskCompleted,
+  logCommandEntered,
+  logSolutionViewed,
+  logProgressReset,
+  logRoundCompleted,
+  setAnalyticsUserProperties,
+} from './src/analytics/firebase';
 
 export default function App() {
   const [tasks] = useState<Task[]>(generateTasks());
@@ -44,7 +53,11 @@ export default function App() {
 
   // Load initial progress from AsyncStorage
   useEffect(() => {
+    // Initialize Firebase Analytics (works offline - events queued if no internet)
+    initializeAnalytics();
+    
     getInitialProgress().then(setProgress);
+    return () => {};
   }, []);
 
   useEffect(() => {
@@ -68,6 +81,7 @@ export default function App() {
       window.addEventListener('keydown', handleKeyPress);
       return () => window.removeEventListener('keydown', handleKeyPress);
     }
+    return () => {};
   }, [progress.currentTaskId, progress.taskOrder, tasks]);
 
   // Save progress to AsyncStorage whenever it changes
@@ -102,13 +116,13 @@ export default function App() {
       let allSuggestions: string[] = [];
       
       if (['install', 'i', 'add'].includes(command)) {
-        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '--save-dev', '-D', '--save', '-S', '--save-exact', '-E', '--no-save', '-g', '--global'];
+        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '@mycompany', '--save-dev', '-D', '--save', '-S', '--save-exact', '-E', '--save-optional', '--save-bundle', '--no-save', '-g', '--global'];
       } else if (['uninstall', 'remove', 'rm', 'r', 'un', 'unlink'].includes(command)) {
-        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '--save-dev', '-D', '--save', '-S', '-g', '--global'];
+        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '@mycompany', '--save-dev', '-D', '--save', '-S', '-g', '--global'];
       } else if (['run', 'run-script'].includes(command)) {
         allSuggestions = ['build', 'test', 'start', 'dev', '--silent'];
       } else if (['init', 'create'].includes(command)) {
-        allSuggestions = ['-y', '--yes', '--scope'];
+        allSuggestions = ['vite', 'my-app', 'react-app', 'react-app@latest', '@vitejs/app', '@latest', '--', '--template', 'react', 'commonjs', 'module', 'MIT', 'Apache-2.0', 'ISC', 'GPL-3.0', 'BSD-3-Clause', 'Unlicense', '0.1.0', '1.0.0', '1.5.0', '2.0.0', '"John Doe"', '"john@example.org"', '"https://johndoe.dev"', '"Alex Chen"', '"alex@techcorp.com"', '@acmecorp', '@techcorp', '@mycompany', 'packages/frontend', 'packages/api', 'packages/tools', './my-init.js', '-y', '--yes', '-f', '--force', '--scope=', '--init-author-name=', '--init-author-email=', '--init-author-url=', '--init-license=', '--init-version=', '--init-type=', '--init-module=', '--init-private', '-w', '--workspace=', '--workspaces', '--include-workspace-root'];
       } else if (['publish'].includes(command)) {
         allSuggestions = ['--access', '--tag', '--dry-run'];
       } else if (['config', 'c'].includes(command)) {
@@ -118,13 +132,13 @@ export default function App() {
       } else if (['outdated'].includes(command)) {
         allSuggestions = ['-g', '--global', '--json'];
       } else if (['list', 'ls', 'll', 'la'].includes(command)) {
-        allSuggestions = ['-g', '--global', '--depth', '--json'];
+        allSuggestions = ['-g', '--global', '--depth', '0', '--json'];
       } else if (['cache'].includes(command)) {
         allSuggestions = ['clean', 'verify', '--force', '-f'];
       } else if (['search', 's', 'se', 'find'].includes(command)) {
         allSuggestions = ['--long', '--json'];
       } else if (['view', 'info', 'show'].includes(command)) {
-        allSuggestions = ['--json'];
+        allSuggestions = ['lodash', 'express', 'react', 'axios', 'chalk', '--json'];
       }
       
       // Filter suggestions by partial match
@@ -155,6 +169,15 @@ export default function App() {
     if (userInput.trim() === 'show') {
       setShowSolution(true);
       setUserInput('');
+      
+      // Log solution viewed (analytics - works offline)
+      if (currentTask) {
+        logSolutionViewed(currentTask.id);
+      }
+      
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
       return;
     }
 
@@ -185,14 +208,27 @@ export default function App() {
 
     const result = validateTaskCompletion(currentTask, userInput);
 
+    // Log command entered (analytics - works offline)
+    logCommandEntered(userInput, result.isCorrect);
+
     if (result.isCorrect) {
       setFeedback('✅ ' + result.message);
       setOutput(result.output || '');
       setLastCommand(userInput);
       
+      // Log task completion (analytics - works offline)
+      logTaskCompleted(currentTask.id, currentTask.commandName);
+      
       // Update progress and move to next task
       const newProgress = updateProgress(progress, currentTask.id);
       setProgress(newProgress);
+      
+      // Update user properties (analytics - works offline)
+      const newStats = getProgressStats(newProgress);
+      setAnalyticsUserProperties({
+        completion_count: newProgress.completionCount,
+        total_tasks: newStats.total,
+      });
       
       // Save current output as previous before clearing
       setPreviousOutput(result.output || '');
@@ -255,9 +291,13 @@ export default function App() {
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
-          // For web, set selection to end
-          if (Platform.OS === 'web' && inputRef.current.setSelectionRange) {
-            (inputRef.current as any).setSelectionRange(newInput.length, newInput.length);
+          // Set selection to end for all platforms
+          if (Platform.OS === 'web') {
+            // Web uses setSelectionRange on the underlying input element
+            const webInput = inputRef.current as any;
+            if (webInput.setSelectionRange) {
+              webInput.setSelectionRange(newInput.length, newInput.length);
+            }
           }
         }
       }, Platform.OS === 'web' ? 10 : 50);
@@ -312,6 +352,9 @@ export default function App() {
   };
 
   const handleStartNewRound = async () => {
+    // Log round completion (analytics - works offline)
+    logRoundCompleted(progress.completionCount, progress.completedTaskIds.length);
+    
     const newProgress = await startNewRound(progress);
     setProgress(newProgress);
     setUserInput('');
@@ -332,6 +375,10 @@ export default function App() {
   const confirmReset = async () => {
     setShowResetConfirm(false);
     const newProgress = await resetProgress();
+    
+    // Log progress reset (analytics - works offline)
+    logProgressReset(progress.completionCount);
+    
     setProgress(newProgress);
     setUserInput('');
     setFeedback('');

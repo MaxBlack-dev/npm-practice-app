@@ -3,6 +3,10 @@ node_modules/
 .expo/
 .expo-shared/
 
+# Cloned npm source for analysis (don't commit)
+npm-cli-source/
+init-package-json/
+
 # Build
 dist/
 build/
@@ -29,6 +33,10 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+
+# Firebase (optional - uncomment to keep Firebase config private)
+# GoogleService-Info.plist
+# google-services.json
 
 # Testing
 coverage/

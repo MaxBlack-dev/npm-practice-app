@@ -54,11 +54,46 @@ function normalizeParameter(input: string, command: NpmCommand): string {
  * Handles: npm <command> [packages...] [parameters...]
  * Example: "npm install lodash express -g" or "npm i -g lodash express"
  */
+/**
+ * Split command string respecting quoted strings
+ */
+function smartSplit(input: string): string[] {
+  const parts: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  let quoteChar = '';
+  
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    
+    if ((char === '"' || char === "'") && !inQuotes) {
+      inQuotes = true;
+      quoteChar = char;
+    } else if (char === quoteChar && inQuotes) {
+      inQuotes = false;
+      quoteChar = '';
+    } else if (char === ' ' && !inQuotes) {
+      if (current) {
+        parts.push(current);
+        current = '';
+      }
+    } else {
+      current += char;
+    }
+  }
+  
+  if (current) {
+    parts.push(current);
+  }
+  
+  return parts;
+}
+
 export function parseCommand(input: string): ParsedCommand {
   const trimmed = input.trim();
   
   // Remove "npm" prefix if present
-  const parts = trimmed.split(/\s+/);
+  const parts = smartSplit(trimmed);
   if (parts.length === 0) {
     return {
       isValid: false,
@@ -106,17 +141,25 @@ export function parseCommand(input: string): ParsedCommand {
     
     // Check if it's a parameter (starts with - or --)
     if (arg.startsWith('-')) {
-      const normalized = normalizeParameter(arg, command);
-      parameters.push(normalized);
-      
-      // Check if this parameter requires a value
-      const paramDef = command.parameters.find(
-        p => p.name === normalized || p.aliases?.includes(arg.toLowerCase())
-      );
-      
-      // Skip the next arg if it's a parameter value (not starting with -)
-      if (paramDef?.requiresValue && i + 1 < args.length && !args[i + 1].startsWith('-')) {
-        i++; // Skip the value in next iteration
+      // Handle --param=value format
+      if (arg.includes('=')) {
+        const [paramPart] = arg.split('=');
+        const normalized = normalizeParameter(paramPart, command);
+        parameters.push(normalized);
+        // Value is included in the parameter, don't need to skip next arg
+      } else {
+        const normalized = normalizeParameter(arg, command);
+        parameters.push(normalized);
+        
+        // Check if this parameter requires a value
+        const paramDef = command.parameters.find(
+          p => p.name === normalized || p.aliases?.includes(arg.toLowerCase())
+        );
+        
+        // Skip the next arg if it's a parameter value (not starting with -)
+        if (paramDef?.requiresValue && i + 1 < args.length && !args[i + 1].startsWith('-')) {
+          i++; // Skip the value in next iteration
+        }
       }
     } else {
       // It's a package name or value

@@ -115,9 +115,69 @@ export function generateTasks(): Task[] {
         title: () => 'Initialize project with default settings',
         description: () => 'Create a package.json file automatically without answering any questions, using default values',
       },
+      '--yes': {
+        title: () => 'Initialize project with default settings',
+        description: () => 'Create a package.json file automatically without answering any questions, using default values',
+      },
+      '-f': {
+        title: () => 'Force reinitialize project',
+        description: () => 'Create a new package.json file even if one already exists, overwriting the existing file',
+      },
+      '--force': {
+        title: () => 'Force reinitialize project',
+        description: () => 'Create a new package.json file even if one already exists, overwriting the existing file',
+      },
       '--scope': {
-        title: () => 'Initialize scoped package',
-        description: () => 'Create a package.json for a scoped package (packages that belong to an organization or user)',
+        title: () => 'Initialize with scope @mycompany',
+        description: () => 'Create a package.json with scope set to "@mycompany" (packages that belong to an organization)',
+      },
+      '--init-author-name': {
+        title: () => 'Initialize with author name "John Doe"',
+        description: () => 'Create a package.json with the author name field set to "John Doe"',
+      },
+      '--init-author-email': {
+        title: () => 'Initialize with author email "john@example.org"',
+        description: () => 'Create a package.json with the author email field set to "john@example.org"',
+      },
+      '--init-author-url': {
+        title: () => 'Initialize with author URL "https://johndoe.dev"',
+        description: () => 'Create a package.json with the author website URL set to "https://johndoe.dev"',
+      },
+      '--init-license': {
+        title: () => 'Initialize with GPL-3.0 license',
+        description: () => 'Create a package.json with the license field set to "GPL-3.0"',
+      },
+      '--init-version': {
+        title: () => 'Initialize with version 1.5.0',
+        description: () => 'Create a package.json with the initial version set to "1.5.0"',
+      },
+      '--init-private': {
+        title: () => 'Initialize as private package',
+        description: () => 'Create a package.json marked as private to prevent accidental publishing to npm',
+      },
+      '--init-type': {
+        title: () => 'Initialize with type "module"',
+        description: () => 'Set the package type to "module" for ES6 import/export syntax',
+      },
+      '--init-module': {
+        title: () => 'Initialize with custom init script',
+        description: () => 'Use a custom initialization script at the specified path',
+      },
+      '-w': {
+        title: () => 'Initialize in workspace "packages/tools"',
+        description: () => 'Create a package.json in the "packages/tools" workspace directory',
+      },
+      '--workspace': {
+        title: () => 'Initialize in workspace "packages/tools"',
+        description: () => 'Create a package.json in the "packages/tools" workspace directory',
+      },
+      '--workspaces': {
+        title: () => 'Initialize all workspaces',
+        description: () => 'Run npm init for all workspace packages defined in your monorepo',
+      },
+      '--include-workspace-root': {
+        title: () => 'Initialize with workspace root',
+        description: () => 'Include the root package when initializing workspaces',
       },
     },
     'install': {
@@ -222,7 +282,222 @@ export function generateTasks(): Task[] {
     },
   };
   
+  // ========== COMPREHENSIVE INIT COMMAND TASKS ==========
+  // Organized in logical groups: basic, initializers, config options, workspaces, combinations
+  // These are added FIRST so they appear at the beginning
+  
+  // Basic init task
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize a new project',
+    description: 'Create a package.json file to start a new npm project',
+    expectedCommand: 'npm init',
+    hint: 'Aliases: create',
+    commandName: 'init',
+    commandExplanation: 'Creates a package.json file for your project. You\'ll be prompted to answer questions about your project name, version, description, etc.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize project with default settings',
+    description: 'Create a package.json file automatically without answering any questions, using default values',
+    expectedCommand: 'npm init -y',
+    hint: 'Use -y or --yes to accept all defaults',
+    commandName: 'init',
+    commandExplanation: 'The -y (or --yes) flag skips all prompts and creates a package.json with default values. Quick way to start a project.',
+  });
+  
+  // GROUP 1: Using Initializers (npm init <initializer>)
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize a Vite project',
+    description: 'Use npm init to bootstrap a new Vite application (runs create-vite)',
+    expectedCommand: 'npm init vite',
+    hint: 'npm init <initializer> runs the corresponding create-<initializer> package',
+    commandName: 'init',
+    commandExplanation: 'npm init <initializer> is a shortcut for npx create-<initializer>. It downloads and runs project scaffolding tools.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize Vite project named "my-app"',
+    description: 'Create a Vite project in a directory called "my-app"',
+    expectedCommand: 'npm init vite my-app',
+    hint: 'Add a directory name after the initializer',
+    commandName: 'init',
+    commandExplanation: 'You can specify a target directory name when using initializers.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with @vitejs/app initializer',
+    description: 'Use the scoped @vitejs/app package initializer to create a project',
+    expectedCommand: 'npm init @vitejs/app',
+    hint: 'Scoped initializers work the same way with @scope/name format',
+    commandName: 'init',
+    commandExplanation: 'npm init @scope runs npx @scope/create. Useful for organization-specific initializers.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with latest react-app',
+    description: 'Run the react-app initializer at the latest version',
+    expectedCommand: 'npm init react-app@latest',
+    hint: 'Use @ to specify version or dist-tag (like @latest, @1.2.3)',
+    commandName: 'init',
+    commandExplanation: 'You can pin initializers to specific versions using @version or @tag syntax (like @latest, @next, @1.2.3).',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize Vite with React template',
+    description: 'Create a Vite project using the React template',
+    expectedCommand: 'npm init vite -- --template react',
+    hint: 'Use -- to separate npm options from initializer options',
+    commandName: 'init',
+    commandExplanation: 'Arguments after -- are passed directly to the initializer package.',
+  });
+
+  // GROUP 2: Configuration Options (--init-* flags) - Specific values
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with author name "John Doe"',
+    description: 'Create a package.json with the author name set to "John Doe"',
+    expectedCommand: 'npm init --init-author-name="John Doe"',
+    hint: 'Use --init-author-name with the specific name value',
+    commandName: 'init',
+    commandExplanation: 'The --init-author-name parameter sets the author field in package.json. Default: empty string.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with full author info',
+    description: 'Set author to "John Doe" with email "john@example.org" and URL "https://johndoe.dev"',
+    expectedCommand: 'npm init --init-author-name="John Doe" --init-author-email="john@example.org" --init-author-url="https://johndoe.dev"',
+    hint: 'Combine --init-author-name, --init-author-email, and --init-author-url',
+    commandName: 'init',
+    commandExplanation: 'Email and URL are only included in the author field if --init-author-name is set. Format: "Name <email> (url)". You can use any combination: name only, name+email, name+url, or all three.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with MIT license',
+    description: 'Create a package.json with the license field set to "MIT"',
+    expectedCommand: 'npm init --init-license=MIT',
+    hint: 'Use --init-license=MIT',
+    commandName: 'init',
+    commandExplanation: 'The --init-license parameter sets the license field in package.json. Default: ISC. Common values: MIT, ISC, Apache-2.0, GPL-3.0, BSD-3-Clause, Unlicense.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with version 0.1.0',
+    description: 'Create a package.json with the initial version set to "0.1.0"',
+    expectedCommand: 'npm init --init-version=0.1.0',
+    hint: 'Use --init-version with the version number',
+    commandName: 'init',
+    commandExplanation: 'The --init-version parameter sets the initial version field in package.json. Default: 1.0.0. Must follow semver format (e.g., 0.1.0, 1.0.0, 2.3.4).',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with ES module type',
+    description: 'Set the package type to "module" to use ES6 import/export',
+    expectedCommand: 'npm init --init-type=module',
+    hint: 'Use --init-type=module',
+    commandName: 'init',
+    commandExplanation: 'The --init-type parameter sets the "type" field in package.json. Allowed values: "module" (uses import/export) or "commonjs" (uses require()). Default: commonjs.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with custom init script',
+    description: 'Use a custom initialization script located at ./my-init.js',
+    expectedCommand: 'npm init --init-module=./my-init.js',
+    hint: 'Use --init-module with a script path',
+    commandName: 'init',
+    commandExplanation: 'The --init-module parameter specifies a custom initialization script path. Default: ~/.npm-init.js. The script is run to generate package.json with custom logic.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize as private package',
+    description: 'Create a package.json with private:true to prevent publishing',
+    expectedCommand: 'npm init --init-private',
+    hint: 'Use the --init-private flag',
+    commandName: 'init',
+    commandExplanation: 'The --init-private flag adds "private": true to package.json, preventing accidental publishing to npm. Default: false (package can be published).',
+  });
+
+  // GROUP 3: Scope and Force
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize with scope @acmecorp',
+    description: 'Create a package.json with scope set to "@acmecorp"',
+    expectedCommand: 'npm init --scope=@acmecorp',
+    hint: 'Use --scope=@acmecorp',
+    commandName: 'init',
+    commandExplanation: 'The --scope parameter sets the package name to @scopename/package-name format, useful for organizations. Default: unscoped package name. Scope must start with @.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Force reinitialize package',
+    description: 'Create a new package.json, overwriting the existing one if present',
+    expectedCommand: 'npm init -f',
+    hint: 'Use -f or --force flag',
+    commandName: 'init',
+    commandExplanation: 'The --force (-f) flag allows npm init to overwrite an existing package.json file without prompting. Use with caution!',
+  });
+
+  // GROUP 4: Workspaces
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize in workspace "packages/frontend"',
+    description: 'Create package.json in the packages/frontend workspace directory',
+    expectedCommand: 'npm init -w packages/frontend',
+    hint: 'Use -w with the workspace path',
+    commandName: 'init',
+    commandExplanation: 'The -w (--workspace) flag initializes a package.json in a specific workspace within a monorepo. The workspace must be defined in the root package.json.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize all workspaces',
+    description: 'Run npm init for every workspace package in your monorepo',
+    expectedCommand: 'npm init --workspaces',
+    hint: 'Use the --workspaces flag',
+    commandName: 'init',
+    commandExplanation: 'The --workspaces flag runs npm init for all workspace packages defined in your root package.json "workspaces" field.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize workspace "packages/api" with Vite',
+    description: 'Use the Vite initializer to set up the packages/api workspace',
+    expectedCommand: 'npm init -w packages/api vite',
+    hint: 'Combine -w with an initializer name',
+    commandName: 'init',
+    commandExplanation: 'You can use initializers within specific workspaces for specialized setups by combining -w and the initializer name.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Initialize workspaces including root',
+    description: 'Initialize both all workspaces AND the root package.json',
+    expectedCommand: 'npm init --workspaces --include-workspace-root',
+    hint: 'Combine --workspaces with --include-workspace-root',
+    commandName: 'init',
+    commandExplanation: 'The --include-workspace-root flag ensures the root package.json is also initialized when using --workspaces.',
+  });
+  // ========== END INIT TASKS ==========
+  
   for (const cmd of NPM_COMMANDS) {
+    // Skip auto-generating tasks for commands with comprehensive task sections
+    if (cmd.name === 'init') {
+      continue; // Skip init - we have comprehensive tasks above
+    }
+    
     // Special handling for commands that require package names
     const requiresPackage = ['install', 'uninstall', 'update', 'view', 'explain'].includes(cmd.name);
     const requiresScriptName = cmd.name === 'run';
@@ -261,7 +536,23 @@ export function generateTasks(): Task[] {
       if (param.name === '--depth') {
         exampleValue = '0';
       } else if (param.name === '--scope') {
-        exampleValue = '@myorg';
+        exampleValue = '@mycompany';
+      } else if (param.name === '--init-author-name') {
+        exampleValue = '"John Doe"';
+      } else if (param.name === '--init-author-email') {
+        exampleValue = '"john@example.org"';
+      } else if (param.name === '--init-author-url') {
+        exampleValue = '"https://johndoe.dev"';
+      } else if (param.name === '--init-license') {
+        exampleValue = '"GPL-3.0"';
+      } else if (param.name === '--init-version') {
+        exampleValue = '"1.5.0"';
+      } else if (param.name === '--init-type') {
+        exampleValue = '"module"';
+      } else if (param.name === '--init-module') {
+        exampleValue = '"./my-init.js"';
+      } else if (param.name === '-w' || param.name === '--workspace') {
+        exampleValue = '"packages/tools"';
       }
       
       const paramDesc = parameterTaskDescriptions[cmd.name]?.[param.name];
@@ -270,13 +561,15 @@ export function generateTasks(): Task[] {
         const examplePackage = examplePackages[packageIndex % examplePackages.length];
         packageIndex++;
         
+        const expectedCmd = param.requiresValue
+          ? `npm ${cmd.name} ${examplePackage} ${param.name} ${exampleValue}`
+          : `npm ${cmd.name} ${examplePackage} ${param.name}`;
+        
         tasks.push({
           id: taskId++,
           title: paramDesc ? paramDesc.title(examplePackage) : `Install ${examplePackage} with special option`,
           description: paramDesc ? paramDesc.description(examplePackage) : param.description,
-          expectedCommand: param.requiresValue
-            ? `npm ${cmd.name} ${examplePackage} ${param.name} ${exampleValue}`
-            : `npm ${cmd.name} ${examplePackage} ${param.name}`,
+          expectedCommand: expectedCmd,
           hint: param.aliases ? `This option has aliases: ${param.aliases.join(', ')}` : undefined,
           commandName: cmd.name,
           commandExplanation: `Uses ${cmd.name} with ${param.name} parameter. ${param.description}`,
@@ -308,13 +601,16 @@ export function generateTasks(): Task[] {
         }
       } else {
         const finalValue = param.requiresValue ? exampleValue : '';
+        // For init command, use = syntax for parameters that require values
+        const expectedCmd = param.requiresValue
+          ? `npm ${cmd.name} ${param.name}=${finalValue}`
+          : `npm ${cmd.name} ${param.name}`;
+        
         tasks.push({
           id: taskId++,
           title: paramDesc ? paramDesc.title() : `${cmd.description} with additional option`,
           description: paramDesc ? paramDesc.description() : param.description,
-          expectedCommand: param.requiresValue
-            ? `npm ${cmd.name} ${param.name} ${finalValue}`
-            : `npm ${cmd.name} ${param.name}`,
+          expectedCommand: expectedCmd,
           hint: param.aliases ? `This option has aliases: ${param.aliases.join(', ')}` : undefined,
           commandName: cmd.name,
           commandExplanation: `Uses ${cmd.name} with ${param.name} parameter. ${param.description}`,

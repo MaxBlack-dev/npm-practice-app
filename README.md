@@ -9,6 +9,7 @@ Learn npm commands through hands-on practice! This cross-platform application te
 - 🎯 **Flexible parameter ordering** - enter parameters in any order
 - 🎭 **Mock command outputs** - see realistic results without executing real commands
 - 📊 **Progress tracking** - monitor your learning journey
+- 📈 **Analytics** - optional Firebase Analytics for usage statistics (works offline!)
 - 🌍 **Cross-platform** - iOS, Android, Windows, macOS, and Web
 
 ## Quick Start
@@ -17,6 +18,7 @@ Learn npm commands through hands-on practice! This cross-platform application te
 
 - Node.js 18+ and npm
 - For mobile development: [Expo Go](https://expo.dev/client) app on your phone
+- (Optional) Firebase account for analytics - see [FIREBASE-SETUP.md](FIREBASE-SETUP.md)
 
 ### Installation
 
