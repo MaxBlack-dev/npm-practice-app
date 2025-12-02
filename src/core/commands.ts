@@ -46,13 +46,49 @@ export const NPM_COMMANDS: NpmCommand[] = [
     aliases: ['i', 'add'],
     description: 'Install packages',
     parameters: [
-      { name: '-g', aliases: ['--global'], description: 'Install globally', requiresValue: false },
+      // Save options
+      { name: '--save', aliases: ['-S'], description: 'Save to dependencies (default)', requiresValue: false },
       { name: '--save-dev', aliases: ['-D'], description: 'Save to devDependencies', requiresValue: false },
-      { name: '--save', aliases: ['-S'], description: 'Save to dependencies', requiresValue: false },
-      { name: '--save-optional', aliases: ['-O'], description: 'Save to optionalDependencies', requiresValue: false },
-      { name: '--no-save', description: 'Prevent saving to dependencies', requiresValue: false },
       { name: '--save-exact', aliases: ['-E'], description: 'Save exact version', requiresValue: false },
+      { name: '--save-optional', aliases: ['-O'], description: 'Save to optionalDependencies', requiresValue: false },
       { name: '--save-bundle', aliases: ['-B'], description: 'Save to bundleDependencies', requiresValue: false },
+      { name: '--no-save', description: 'Prevent saving to package.json', requiresValue: false },
+      // Installation location
+      { name: '--global', aliases: ['-g'], description: 'Install globally', requiresValue: false },
+      // Installation strategy
+      { name: '--install-strategy', description: 'Installation strategy (hoisted, nested, shallow, linked)', requiresValue: true },
+      { name: '--legacy-bundling', description: 'Use npm v2 style installation', requiresValue: false },
+      { name: '--global-style', description: 'Install as if it were global', requiresValue: false },
+      { name: '--prefer-dedupe', description: 'Prefer deduping over installing', requiresValue: false },
+      // Dependencies filtering
+      { name: '--omit', description: 'Omit dependency types (dev, optional, peer)', requiresValue: true },
+      { name: '--include', description: 'Include dependency types', requiresValue: true },
+      // Lock file
+      { name: '--package-lock', description: 'Use package-lock.json (default true)', requiresValue: false },
+      { name: '--no-package-lock', description: 'Don\'t read/write package-lock.json', requiresValue: false },
+      { name: '--package-lock-only', description: 'Only update package-lock.json', requiresValue: false },
+      // Scripts and checks  
+      { name: '--ignore-scripts', description: 'Skip running scripts', requiresValue: false },
+      { name: '--foreground-scripts', description: 'Run scripts in foreground', requiresValue: false },
+      { name: '--strict-peer-deps', description: 'Fail on peer dependency conflicts', requiresValue: false },
+      // Audit and security
+      { name: '--audit', description: 'Run security audit (default true)', requiresValue: false },
+      { name: '--no-audit', description: 'Skip security audit', requiresValue: false },
+      // Performance and behavior
+      { name: '--dry-run', description: 'Preview without installing', requiresValue: false },
+      { name: '--bin-links', description: 'Create symlinks for binaries (default true)', requiresValue: false },
+      { name: '--fund', description: 'Display funding info (default true)', requiresValue: false },
+      { name: '--no-fund', description: 'Hide funding info', requiresValue: false },
+      // Platform filters
+      { name: '--before', description: 'Install versions published before date', requiresValue: true },
+      { name: '--cpu', description: 'Filter by CPU architecture', requiresValue: true },
+      { name: '--os', description: 'Filter by operating system', requiresValue: true },
+      { name: '--libc', description: 'Filter by libc implementation', requiresValue: true },
+      // Workspace support
+      { name: '--workspace', aliases: ['-w'], description: 'Install in specific workspace', requiresValue: true },
+      { name: '--workspaces', description: 'Install in all workspaces', requiresValue: false },
+      { name: '--include-workspace-root', description: 'Include workspace root', requiresValue: false },
+      { name: '--install-links', description: 'Install file: protocol deps as symlinks', requiresValue: false },
     ],
     mockOutput: '\nadded 1 package, and audited 2 packages in 3s\n\nfound 0 vulnerabilities',
   },

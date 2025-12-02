@@ -491,11 +491,187 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --include-workspace-root flag ensures the root package.json is also initialized when using --workspaces.',
   });
   // ========== END INIT TASKS ==========
+
+  // ========== COMPREHENSIVE INSTALL COMMAND TASKS ==========
+  // Covers all npm install parameters from source code
+  // Parameters from npm-cli-source/lib/commands/install.js
+  
+  // GROUP 1: Basic install tasks
+  tasks.push({
+    id: taskId++,
+    title: 'Install lodash package',
+    description: 'Add the lodash utility library to your project',
+    expectedCommand: 'npm install lodash',
+    hint: 'Aliases: i, add',
+    commandName: 'install',
+    commandExplanation: 'Installs a package and adds it to dependencies in package.json. By default, uses the latest version.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install multiple packages',
+    description: 'Install both express and body-parser in one command',
+    expectedCommand: 'npm install express body-parser',
+    hint: 'List packages separated by spaces',
+    commandName: 'install',
+    commandExplanation: 'You can install multiple packages in a single command by listing them separated by spaces.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install specific version',
+    description: 'Install lodash version 4.17.20 exactly',
+    expectedCommand: 'npm install lodash@4.17.20',
+    hint: 'Use @version after package name',
+    commandName: 'install',
+    commandExplanation: 'The @version syntax lets you install a specific version. Example: package@1.2.3',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install latest version',
+    description: 'Install the latest version of react using the @latest tag',
+    expectedCommand: 'npm install react@latest',
+    hint: 'Use @latest to get the newest version',
+    commandName: 'install',
+    commandExplanation: 'The @latest tag ensures you get the most recent published version, even if you have an older one installed.',
+  });
+
+  // GROUP 2: Save options
+  tasks.push({
+    id: taskId++,
+    title: 'Install as dev dependency',
+    description: 'Install jest as a development dependency',
+    expectedCommand: 'npm install jest --save-dev',
+    hint: 'Use --save-dev or -D flag',
+    commandName: 'install',
+    commandExplanation: 'The --save-dev (-D) flag adds the package to devDependencies. These are only needed during development, not in production.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install with exact version',
+    description: 'Install react and save the exact version (no ^ or ~)',
+    expectedCommand: 'npm install react --save-exact',
+    hint: 'Use --save-exact or -E flag',
+    commandName: 'install',
+    commandExplanation: 'The --save-exact (-E) flag saves the exact version without range operators (^ or ~). Example: "1.2.3" instead of "^1.2.3".',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install without saving',
+    description: 'Install axios without adding it to package.json',
+    expectedCommand: 'npm install axios --no-save',
+    hint: 'Use --no-save flag',
+    commandName: 'install',
+    commandExplanation: 'The --no-save flag installs the package but doesn\'t modify package.json. Useful for temporary testing.',
+  });
+
+  // GROUP 3: Global installation
+  tasks.push({
+    id: taskId++,
+    title: 'Install globally',
+    description: 'Install typescript globally on your system',
+    expectedCommand: 'npm install typescript --global',
+    hint: 'Use --global or -g flag',
+    commandName: 'install',
+    commandExplanation: 'The --global (-g) flag installs packages system-wide, making CLI tools available from anywhere. They go to a global directory, not node_modules.',
+  });
+
+  // GROUP 4: Package lock and strategy options
+  tasks.push({
+    id: taskId++,
+    title: 'Install without package-lock',
+    description: 'Install packages but don\'t update package-lock.json',
+    expectedCommand: 'npm install lodash --no-package-lock',
+    hint: 'Use --no-package-lock flag',
+    commandName: 'install',
+    commandExplanation: 'The --no-package-lock flag prevents npm from generating or updating package-lock.json. Not recommended for most projects.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install with legacy bundling',
+    description: 'Use npm v2 style flat installation',
+    expectedCommand: 'npm install --legacy-bundling',
+    hint: 'Use --legacy-bundling flag',
+    commandName: 'install',
+    commandExplanation: 'The --legacy-bundling flag uses npm v2 installation style where all dependencies are installed flat. Useful for compatibility with older tools.',
+  });
+
+  // GROUP 5: Script and audit options
+  tasks.push({
+    id: taskId++,
+    title: 'Install without running scripts',
+    description: 'Install packages but skip pre/post install scripts',
+    expectedCommand: 'npm install --ignore-scripts',
+    hint: 'Use --ignore-scripts flag',
+    commandName: 'install',
+    commandExplanation: 'The --ignore-scripts flag prevents npm from running install scripts defined in packages. Useful for security or when scripts fail.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install without audit',
+    description: 'Install packages without checking for vulnerabilities',
+    expectedCommand: 'npm install lodash --no-audit',
+    hint: 'Use --no-audit flag',
+    commandName: 'install',
+    commandExplanation: 'The --no-audit flag skips the security audit that normally runs after install. Speeds up installation but you won\'t see vulnerability warnings.',
+  });
+
+  // GROUP 6: Dry run and production
+  tasks.push({
+    id: taskId++,
+    title: 'Dry run installation',
+    description: 'Preview what would be installed without actually installing',
+    expectedCommand: 'npm install express --dry-run',
+    hint: 'Use --dry-run flag',
+    commandName: 'install',
+    commandExplanation: 'The --dry-run flag shows what would happen without making changes. Useful for testing before actual installation.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install production dependencies only',
+    description: 'Install only dependencies, skip devDependencies',
+    expectedCommand: 'npm install --omit=dev',
+    hint: 'Use --omit=dev flag',
+    commandName: 'install',
+    commandExplanation: 'The --omit=dev flag installs only production dependencies, skipping devDependencies. Common in production deployments.',
+  });
+
+  // GROUP 7: Workspace options
+  tasks.push({
+    id: taskId++,
+    title: 'Install in specific workspace',
+    description: 'Install lodash in the packages/frontend workspace',
+    expectedCommand: 'npm install lodash --workspace=packages/frontend',
+    hint: 'Use --workspace or -w flag',
+    commandName: 'install',
+    commandExplanation: 'The --workspace (-w) flag installs packages in a specific workspace within a monorepo. The workspace must be defined in root package.json.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install in all workspaces',
+    description: 'Install lodash in every workspace package',
+    expectedCommand: 'npm install lodash --workspaces',
+    hint: 'Use --workspaces flag',
+    commandName: 'install',
+    commandExplanation: 'The --workspaces flag installs the package in all workspaces defined in your monorepo.',
+  });
+  // ========== END INSTALL TASKS ==========
   
   for (const cmd of NPM_COMMANDS) {
     // Skip auto-generating tasks for commands with comprehensive task sections
     if (cmd.name === 'init') {
       continue; // Skip init - we have comprehensive tasks above
+    }
+    
+    if (cmd.name === 'install') {
+      continue; // Skip install - we have comprehensive tasks above
     }
     
     // Special handling for commands that require package names
