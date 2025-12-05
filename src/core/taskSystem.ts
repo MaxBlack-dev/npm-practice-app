@@ -1026,6 +1026,28 @@ export function generateTasks(): Task[] {
     commandName: 'uninstall',
     commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces.',
   });
+
+  // 5. install-links
+  tasks.push({
+    id: taskId++,
+    title: 'Uninstall with install-links',
+    description: 'Uninstall package that was installed as packed',
+    expectedCommand: 'npm uninstall lodash --install-links',
+    hint: 'Use --install-links flag',
+    commandName: 'uninstall',
+    commandExplanation: 'The --install-links flag affects how file: protocol dependencies are handled during uninstall.',
+  });
+
+  // 6. no-save
+  tasks.push({
+    id: taskId++,
+    title: 'Uninstall without updating package.json',
+    description: 'Remove lodash but keep it in package.json',
+    expectedCommand: 'npm uninstall lodash --no-save',
+    hint: 'Use --no-save flag',
+    commandName: 'uninstall',
+    commandExplanation: 'The --no-save flag prevents npm from removing the package from package.json files.',
+  });
   // ========== END UNINSTALL TASKS ==========
 
   // ========== COMPREHENSIVE CI COMMAND TASKS ==========
