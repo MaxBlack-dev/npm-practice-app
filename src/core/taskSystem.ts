@@ -4341,24 +4341,6 @@ export function generateTasks(): Task[] {
   });
   tasks.push({
     id: taskId++,
-    title: 'Find dupes legacy bundling',
-    description: 'Check with legacy-bundling',
-    expectedCommand: 'npm find-dupes --legacy-bundling',
-    hint: 'Use --legacy-bundling flag (deprecated)',
-    commandName: 'find-dupes',
-    commandExplanation: 'The --legacy-bundling flag checks for dupes with nested strategy (deprecated).',
-  });
-  tasks.push({
-    id: taskId++,
-    title: 'Find dupes global style',
-    description: 'Check with global-style',
-    expectedCommand: 'npm find-dupes --global-style',
-    hint: 'Use --global-style flag (deprecated)',
-    commandName: 'find-dupes',
-    commandExplanation: 'The --global-style flag checks for dupes with shallow strategy (deprecated).',
-  });
-  tasks.push({
-    id: taskId++,
     title: 'Strict peer deps check',
     description: 'Fail on peer conflicts',
     expectedCommand: 'npm find-dupes --strict-peer-deps',
