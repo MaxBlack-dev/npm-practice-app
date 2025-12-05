@@ -983,7 +983,18 @@ export function generateTasks(): Task[] {
   });
 
   // Configuration flags (in documentation order)
-  // 1. global
+  // 1. save (default true, so we show --no-save)
+  tasks.push({
+    id: taskId++,
+    title: 'Uninstall without updating package.json',
+    description: 'Remove lodash but keep it in package.json',
+    expectedCommand: 'npm uninstall lodash --no-save',
+    hint: 'Use --no-save flag',
+    commandName: 'uninstall',
+    commandExplanation: 'The --no-save flag prevents npm from removing the package from package.json files.',
+  });
+
+  // 2. global
   tasks.push({
     id: taskId++,
     title: 'Uninstall globally',
@@ -994,7 +1005,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --global (-g) flag uninstalls packages that were installed system-wide.',
   });
 
-  // 2. workspace
+  // 3. workspace
   tasks.push({
     id: taskId++,
     title: 'Uninstall from specific workspace',
@@ -1005,7 +1016,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --workspace (-w) flag uninstalls packages from a specific workspace within a monorepo.',
   });
 
-  // 3. workspaces
+  // 4. workspaces
   tasks.push({
     id: taskId++,
     title: 'Uninstall from all workspaces',
@@ -1016,7 +1027,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --workspaces flag uninstalls the package from all workspaces defined in your monorepo.',
   });
 
-  // 4. include-workspace-root
+  // 5. include-workspace-root
   tasks.push({
     id: taskId++,
     title: 'Uninstall from workspaces including root',
@@ -1027,7 +1038,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces.',
   });
 
-  // 5. install-links
+  // 6. install-links
   tasks.push({
     id: taskId++,
     title: 'Uninstall with install-links',
@@ -1036,17 +1047,6 @@ export function generateTasks(): Task[] {
     hint: 'Use --install-links flag',
     commandName: 'uninstall',
     commandExplanation: 'The --install-links flag affects how file: protocol dependencies are handled during uninstall.',
-  });
-
-  // 6. no-save
-  tasks.push({
-    id: taskId++,
-    title: 'Uninstall without updating package.json',
-    description: 'Remove lodash but keep it in package.json',
-    expectedCommand: 'npm uninstall lodash --no-save',
-    hint: 'Use --no-save flag',
-    commandName: 'uninstall',
-    commandExplanation: 'The --no-save flag prevents npm from removing the package from package.json files.',
   });
   // ========== END UNINSTALL TASKS ==========
 
