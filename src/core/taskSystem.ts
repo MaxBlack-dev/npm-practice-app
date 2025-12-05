@@ -71,10 +71,10 @@ export function generateTasks(): Task[] {
       description: (pkg) => pkg ? `Update ${pkg} to its latest compatible version` : 'Check for and install newer versions of installed packages',
       explanation: 'The update command upgrades packages to their latest compatible versions based on semver ranges in package.json.',
     },
-    'list': {
+    'ls': {
       title: () => 'Show installed packages',
       description: () => 'Display a tree of all installed packages in your project',
-      explanation: 'The list command shows all installed packages and their dependencies. Use "ls", "ll", or "la" as shortcuts.',
+      explanation: 'The ls command shows all installed packages and their dependencies. Use "list", "ll", or "la" as aliases.',
     },
     'version': {
       title: () => 'Check npm version information',
@@ -234,7 +234,7 @@ export function generateTasks(): Task[] {
         description: (pkg) => pkg ? `Update ${pkg} to the latest version and save the new version to package.json` : 'Update packages and save new versions to package.json',
       },
     },
-    'list': {
+    'ls': {
       '-g': {
         title: () => 'Show all system-wide packages',
         description: () => 'Display all packages installed globally on your computer',
@@ -1444,17 +1444,17 @@ export function generateTasks(): Task[] {
   });
   // ========== END UPDATE TASKS ==========
 
-  // ========== COMPREHENSIVE LIST COMMAND TASKS ==========
-  // Reference: https://docs.npmjs.com/cli/v11/commands/npm-list
+  // ========== COMPREHENSIVE LS COMMAND TASKS ==========
+  // Reference: https://docs.npmjs.com/cli/v11/commands/npm-ls
   
-  // Basic list task (no flags)
+  // Basic ls task (no flags)
   tasks.push({
     id: taskId++,
     title: 'List installed packages',
     description: 'Show a tree of all installed packages',
-    expectedCommand: 'npm list',
-    hint: 'Aliases: ls, ll, la',
-    commandName: 'list',
+    expectedCommand: 'npm ls',
+    hint: 'Aliases: list, ll, la',
+    commandName: 'ls',
     commandExplanation: 'Displays a tree of installed packages and their dependencies.',
   });
 
@@ -1464,9 +1464,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List all dependencies',
     description: 'Show all dependencies including transitive ones',
-    expectedCommand: 'npm list --all',
+    expectedCommand: 'npm ls --all',
     hint: 'Use --all or -a flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --all (-a) flag shows all dependencies without depth limit.',
   });
 
@@ -1475,9 +1475,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List packages as JSON',
     description: 'Output package list in JSON format',
-    expectedCommand: 'npm list --json',
+    expectedCommand: 'npm ls --json',
     hint: 'Use --json flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --json flag outputs the package tree as JSON for programmatic use.',
   });
 
@@ -1486,9 +1486,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List with extended information',
     description: 'Show package list with additional details',
-    expectedCommand: 'npm list --long',
+    expectedCommand: 'npm ls --long',
     hint: 'Use --long or -l flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --long (-l) flag shows extended information like description and homepage.',
   });
 
@@ -1497,9 +1497,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List in parseable format',
     description: 'Output package list as parseable lines',
-    expectedCommand: 'npm list --parseable',
+    expectedCommand: 'npm ls --parseable',
     hint: 'Use --parseable or -p flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --parseable (-p) flag outputs packages as newline-delimited paths.',
   });
 
@@ -1508,9 +1508,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List global packages',
     description: 'Show all globally installed packages',
-    expectedCommand: 'npm list --global',
+    expectedCommand: 'npm ls --global',
     hint: 'Use --global or -g flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --global (-g) flag lists packages installed system-wide.',
   });
 
@@ -1519,9 +1519,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List with depth limit',
     description: 'Show packages up to depth 1',
-    expectedCommand: 'npm list --depth=1',
+    expectedCommand: 'npm ls --depth=1',
     hint: 'Use --depth with a number',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --depth flag limits how deep the dependency tree is displayed.',
   });
 
@@ -1530,9 +1530,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List omitting dev dependencies',
     description: 'Show only production dependencies',
-    expectedCommand: 'npm list --omit=dev',
+    expectedCommand: 'npm ls --omit=dev',
     hint: 'Use --omit=dev, --omit=optional, or --omit=peer',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --omit flag excludes certain dependency types from the list.',
   });
 
@@ -1541,9 +1541,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List including optional dependencies',
     description: 'Show all dependencies including optional ones',
-    expectedCommand: 'npm list --include=optional',
+    expectedCommand: 'npm ls --include=optional',
     hint: 'Use --include=dev, --include=optional, or --include=peer',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --include flag specifies dependency types to include in the list.',
   });
 
@@ -1552,9 +1552,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List only linked packages',
     description: 'Show only packages that are symlinked',
-    expectedCommand: 'npm list --link',
+    expectedCommand: 'npm ls --link',
     hint: 'Use --link flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --link flag shows only packages installed via npm link.',
   });
 
@@ -1563,9 +1563,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List from package-lock only',
     description: 'Show packages based on package-lock.json',
-    expectedCommand: 'npm list --package-lock-only',
+    expectedCommand: 'npm ls --package-lock-only',
     hint: 'Use --package-lock-only flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --package-lock-only flag uses package-lock.json instead of reading node_modules.',
   });
 
@@ -1574,9 +1574,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List without unicode',
     description: 'Show package tree without unicode characters',
-    expectedCommand: 'npm list --no-unicode',
+    expectedCommand: 'npm ls --no-unicode',
     hint: 'Use --no-unicode flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --no-unicode flag uses ASCII characters instead of unicode for the tree.',
   });
 
@@ -1585,9 +1585,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List specific workspace',
     description: 'Show packages in the packages/frontend workspace',
-    expectedCommand: 'npm list --workspace=packages/frontend',
+    expectedCommand: 'npm ls --workspace=packages/frontend',
     hint: 'Use --workspace or -w flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --workspace (-w) flag lists packages in a specific workspace.',
   });
 
@@ -1596,9 +1596,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List all workspaces',
     description: 'Show packages in every workspace',
-    expectedCommand: 'npm list --workspaces',
+    expectedCommand: 'npm ls --workspaces',
     hint: 'Use --workspaces or -ws flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --workspaces flag lists packages in all workspaces.',
   });
 
@@ -1607,9 +1607,9 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List workspaces including root',
     description: 'Show packages in all workspaces and the root',
-    expectedCommand: 'npm list --workspaces --include-workspace-root',
+    expectedCommand: 'npm ls --workspaces --include-workspace-root',
     hint: 'Use --include-workspace-root with --workspaces',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces.',
   });
 
@@ -1618,12 +1618,12 @@ export function generateTasks(): Task[] {
     id: taskId++,
     title: 'List including symlinked packages',
     description: 'Show file: dependencies in the list',
-    expectedCommand: 'npm list --install-links',
+    expectedCommand: 'npm ls --install-links',
     hint: 'Use --install-links flag',
-    commandName: 'list',
+    commandName: 'ls',
     commandExplanation: 'The --install-links flag includes symlinked file: dependencies in the list.',
   });
-  // ========== END LIST TASKS ==========
+  // ========== END LS TASKS ==========
 
   // ========== COMPREHENSIVE OUTDATED COMMAND TASKS ==========
   // Reference: https://docs.npmjs.com/cli/v11/commands/npm-outdated
@@ -4586,8 +4586,8 @@ export function generateTasks(): Task[] {
       continue; // Skip update - we have comprehensive tasks above
     }
     
-    if (cmd.name === 'list') {
-      continue; // Skip list - we have comprehensive tasks above
+    if (cmd.name === 'ls') {
+      continue; // Skip ls - we have comprehensive tasks above
     }
     
     if (cmd.name === 'outdated') {
