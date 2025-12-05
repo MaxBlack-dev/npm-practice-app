@@ -364,7 +364,7 @@ export function generateTasks(): Task[] {
     title: 'Initialize with author name "John Doe"',
     description: 'Create a package.json with the author name set to "John Doe"',
     expectedCommand: 'npm init --init-author-name="John Doe"',
-    hint: 'Use --init-author-name with the specific name value',
+    hint: 'Use --init-author-name with the specific name value, and -y to skip prompts',
     commandName: 'init',
     commandExplanation: 'The --init-author-name parameter sets the author field in package.json. Default: empty string.',
   });
@@ -394,7 +394,7 @@ export function generateTasks(): Task[] {
     title: 'Initialize with version 0.1.0',
     description: 'Create a package.json with the initial version set to "0.1.0"',
     expectedCommand: 'npm init --init-version=0.1.0',
-    hint: 'Use --init-version with the version number',
+    hint: 'Use --init-version with the version number, and -y to skip prompts',
     commandName: 'init',
     commandExplanation: 'The --init-version parameter sets the initial version field in package.json. Default: 1.0.0. Must follow semver format (e.g., 0.1.0, 1.0.0, 2.3.4).',
   });
@@ -414,7 +414,7 @@ export function generateTasks(): Task[] {
     title: 'Initialize with custom init script',
     description: 'Use a custom initialization script located at ./my-init.js',
     expectedCommand: 'npm init --init-module=./my-init.js',
-    hint: 'Use --init-module with a script path',
+    hint: 'Use --init-module with a script path, and -y to skip prompts',
     commandName: 'init',
     commandExplanation: 'The --init-module parameter specifies a custom initialization script path. Default: ~/.npm-init.js. The script is run to generate package.json with custom logic.',
   });
@@ -424,7 +424,7 @@ export function generateTasks(): Task[] {
     title: 'Initialize as private package',
     description: 'Create a package.json with private:true to prevent publishing',
     expectedCommand: 'npm init --init-private',
-    hint: 'Use the --init-private flag',
+    hint: 'Use the --init-private flag with',
     commandName: 'init',
     commandExplanation: 'The --init-private flag adds "private": true to package.json, preventing accidental publishing to npm. Default: false (package can be published).',
   });
@@ -502,7 +502,7 @@ export function generateTasks(): Task[] {
     title: 'Install lodash package',
     description: 'Add the lodash utility library to your project',
     expectedCommand: 'npm install lodash',
-    hint: 'Aliases: i, add',
+    hint: 'Aliases: i, add, in, ins, inst, insta, instal, isnt, isnta, isntal, isntall',
     commandName: 'install',
     commandExplanation: 'Installs a package and adds it to dependencies in package.json. By default, uses the latest version.',
   });
@@ -548,6 +548,108 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --save-dev (-D) flag adds the package to devDependencies. These are only needed during development, not in production.',
   });
 
+  // GROUP 2.1: Install variations - different sources
+  tasks.push({
+    id: taskId++,
+    title: 'Install from folder',
+    description: 'Install a package from the local folder ./my-package',
+    expectedCommand: 'npm install ./my-package',
+    hint: 'Use a relative or absolute folder path',
+    commandName: 'install',
+    commandExplanation: 'You can install packages from local folders by providing a path. Useful for local development or packages not published to npm.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from tarball file',
+    description: 'Install a package from a local package.tgz file',
+    expectedCommand: 'npm install ./package.tgz',
+    hint: 'Provide path to a .tgz or .tar.gz file',
+    commandName: 'install',
+    commandExplanation: 'You can install packages from tarball files created with npm pack. The file must be a .tgz or .tar.gz archive.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from tarball URL',
+    description: 'Install a package from a remote tarball URL (https://example.com/package.tgz)',
+    expectedCommand: 'npm install https://example.com/package.tgz',
+    hint: 'Use a full HTTPS URL to a tarball file',
+    commandName: 'install',
+    commandExplanation: 'You can install packages from remote tarball URLs. The URL must point to a .tgz file accessible via HTTPS.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from git URL',
+    description: 'Install a package from git+https://github.com/user/repo.git',
+    expectedCommand: 'npm install git+https://github.com/user/repo.git',
+    hint: 'Use git+https:// or git+ssh:// URL',
+    commandName: 'install',
+    commandExplanation: 'You can install packages from git repositories using git+https:// or git+ssh:// URLs. npm will clone the repo and install it.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from GitHub shortcut',
+    description: 'Install lodash using the GitHub username/repo shortcut',
+    expectedCommand: 'npm install lodash/lodash',
+    hint: 'Format: username/repository',
+    commandName: 'install',
+    commandExplanation: 'GitHub shortcut syntax: username/repo automatically resolves to github.com. You can add #branch or #tag for specific versions.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from GitHub with branch',
+    description: 'Install lodash from GitHub repo user/repo using the main branch',
+    expectedCommand: 'npm install lodash/lodash#main',
+    hint: 'Use username/repo#branch-name format',
+    commandName: 'install',
+    commandExplanation: 'Add #branch-name after the repo to install from a specific branch. Also works with #v1.2.3 for tags.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from GitLab',
+    description: 'Install lodash from GitLab repository gitlab:user/repo',
+    expectedCommand: 'npm install gitlab:lodash/lodash',
+    hint: 'Use gitlab:username/repository',
+    commandName: 'install',
+    commandExplanation: 'GitLab shortcut syntax: gitlab:user/repo automatically resolves to gitlab.com. Similar to GitHub shortcuts.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install from gist',
+    description: 'Install a package from GitHub gist with ID abc123def456',
+    expectedCommand: 'npm install gist:abc123def456',
+    hint: 'Use gist:gist-id format',
+    commandName: 'install',
+    commandExplanation: 'You can install packages from GitHub gists using the gist: prefix followed by the gist ID.',
+  });
+
+  // GROUP 2.2: More save options
+  tasks.push({
+    id: taskId++,
+    title: 'Install as optional dependency',
+    description: 'Install fsevents as an optional dependency',
+    expectedCommand: 'npm install fsevents --save-optional',
+    hint: 'Use --save-optional or -O flag',
+    commandName: 'install',
+    commandExplanation: 'The --save-optional (-O) flag adds packages to optionalDependencies. Installation continues even if these fail.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install as bundled dependency',
+    description: 'Install axios as a production dependency and bundle it for publishing',
+    expectedCommand: 'npm install axios --save-prod --save-bundle',
+    hint: 'Use --save-prod with --save-bundle (or -B) flag',
+    commandName: 'install',
+    commandExplanation: 'The --save-bundle (-B) flag is used alongside save flags like --save-prod to add packages to both dependencies and bundleDependencies. Bundled packages are included when you publish.',
+  });
+
   tasks.push({
     id: taskId++,
     title: 'Install with exact version',
@@ -568,7 +670,154 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-save flag installs the package but doesn\'t modify package.json. Useful for temporary testing.',
   });
 
-  // GROUP 3: Global installation
+  // GROUP 3: Installation strategy options
+  tasks.push({
+    id: taskId++,
+    title: 'Install with shallow strategy',
+    description: 'Use shallow installation strategy',
+    expectedCommand: 'npm install --install-strategy=shallow',
+    hint: 'Use --install-strategy with nested, hoisted, shallow, or linked',
+    commandName: 'install',
+    commandExplanation: 'The --install-strategy option controls how dependencies are installed. Options: hoisted (default), nested, shallow, linked.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install with prefer-dedupe',
+    description: 'Prefer deduping existing packages over installing new copies',
+    expectedCommand: 'npm install --prefer-dedupe',
+    hint: 'Use --prefer-dedupe flag',
+    commandName: 'install',
+    commandExplanation: 'The --prefer-dedupe flag attempts to reuse existing packages in the tree rather than installing duplicates.',
+  });
+
+  // GROUP 4: Dependencies filtering
+  tasks.push({
+    id: taskId++,
+    title: 'Install including optional dependencies',
+    description: 'Install all dependencies including optional ones',
+    expectedCommand: 'npm install --include=optional',
+    hint: 'Use --include=dev, --include=optional, or --include=peer',
+    commandName: 'install',
+    commandExplanation: 'The --include flag specifies dependency types to include. Can be dev, optional, or peer.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install omitting peer dependencies',
+    description: 'Install but skip peer dependencies',
+    expectedCommand: 'npm install --omit=peer',
+    hint: 'Use --omit=dev, --omit=optional, or --omit=peer',
+    commandName: 'install',
+    commandExplanation: 'The --omit flag specifies dependency types to skip. Can be dev, optional, or peer.',
+  });
+
+  // GROUP 5: Lock file options
+  tasks.push({
+    id: taskId++,
+    title: 'Update only package-lock',
+    description: 'Update package-lock.json without installing packages',
+    expectedCommand: 'npm install --package-lock-only',
+    hint: 'Use --package-lock-only flag',
+    commandName: 'install',
+    commandExplanation: 'The --package-lock-only flag only updates package-lock.json without modifying node_modules. Useful for lockfile maintenance.',
+  });
+
+  // GROUP 6: Script execution options
+  tasks.push({
+    id: taskId++,
+    title: 'Install with foreground scripts',
+    description: 'Run install scripts in foreground with full output',
+    expectedCommand: 'npm install --foreground-scripts',
+    hint: 'Use --foreground-scripts flag',
+    commandName: 'install',
+    commandExplanation: 'The --foreground-scripts flag runs lifecycle scripts in the foreground, showing full output instead of hiding it.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install with strict peer deps',
+    description: 'Fail installation if peer dependencies conflict',
+    expectedCommand: 'npm install --strict-peer-deps',
+    hint: 'Use --strict-peer-deps flag',
+    commandName: 'install',
+    commandExplanation: 'The --strict-peer-deps flag causes npm to fail if there are peer dependency conflicts instead of just warning.',
+  });
+
+  // GROUP 7: Binary and funding options
+  tasks.push({
+    id: taskId++,
+    title: 'Install without bin links',
+    description: 'Install packages without creating binary symlinks',
+    expectedCommand: 'npm install --no-bin-links',
+    hint: 'Use --no-bin-links flag',
+    commandName: 'install',
+    commandExplanation: 'The --no-bin-links flag prevents npm from creating symlinks for package binaries. Useful on Windows or restricted filesystems.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install with funding info',
+    description: 'Display funding information after install',
+    expectedCommand: 'npm install --fund',
+    hint: 'Use --fund flag (enabled by default)',
+    commandName: 'install',
+    commandExplanation: 'The --fund flag displays funding information for installed packages. This is enabled by default.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install without funding info',
+    description: 'Hide funding messages during installation',
+    expectedCommand: 'npm install --no-fund',
+    hint: 'Use --no-fund flag',
+    commandName: 'install',
+    commandExplanation: 'The --no-fund flag suppresses funding messages that npm shows after installation.',
+  });
+
+  // GROUP 8: Platform filters
+  tasks.push({
+    id: taskId++,
+    title: 'Install for specific CPU',
+    description: 'Filter packages by CPU architecture (x64)',
+    expectedCommand: 'npm install --cpu=x64',
+    hint: 'Use --cpu=x64, --cpu=arm64, etc.',
+    commandName: 'install',
+    commandExplanation: 'The --cpu flag filters packages by required CPU architecture. Common values: x64, arm64, ia32.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install for specific OS',
+    description: 'Filter packages by operating system (linux)',
+    expectedCommand: 'npm install --os=linux',
+    hint: 'Use --os=linux, --os=darwin, --os=win32, etc.',
+    commandName: 'install',
+    commandExplanation: 'The --os flag filters packages by required operating system. Common values: linux, darwin (macOS), win32.',
+  });
+
+  tasks.push({
+    id: taskId++,
+    title: 'Install for specific libc',
+    description: 'Filter packages by libc implementation (glibc)',
+    expectedCommand: 'npm install --libc=glibc',
+    hint: 'Use --libc=glibc or --libc=musl',
+    commandName: 'install',
+    commandExplanation: 'The --libc flag filters packages by required C library implementation. Common values: glibc, musl.',
+  });
+
+  // GROUP 9: Workspace advanced options
+  tasks.push({
+    id: taskId++,
+    title: 'Install in workspace root',
+    description: 'Install lodash in all workspaces including the root package',
+    expectedCommand: 'npm install lodash --workspaces --include-workspace-root',
+    hint: 'Use --include-workspace-root with --workspaces',
+    commandName: 'install',
+    commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces, installing in all packages.',
+  });
+
+  // GROUP 10: Global installation
   tasks.push({
     id: taskId++,
     title: 'Install globally',
@@ -579,11 +828,11 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --global (-g) flag installs packages system-wide, making CLI tools available from anywhere. They go to a global directory, not node_modules.',
   });
 
-  // GROUP 4: Package lock and strategy options
+  // GROUP 11: Package lock and strategy options
   tasks.push({
     id: taskId++,
-    title: 'Install without package-lock',
-    description: 'Install packages but don\'t update package-lock.json',
+    title: 'Install lodash without package-lock',
+    description: 'Install lodash but don\'t update package-lock.json',
     expectedCommand: 'npm install lodash --no-package-lock',
     hint: 'Use --no-package-lock flag',
     commandName: 'install',
@@ -592,15 +841,25 @@ export function generateTasks(): Task[] {
 
   tasks.push({
     id: taskId++,
-    title: 'Install with legacy bundling',
-    description: 'Use npm v2 style flat installation',
-    expectedCommand: 'npm install --legacy-bundling',
-    hint: 'Use --legacy-bundling flag',
+    title: 'Install with nested strategy',
+    description: 'Install in place without hoisting (formerly --legacy-bundling)',
+    expectedCommand: 'npm install --install-strategy=nested',
+    hint: 'Use --install-strategy=nested flag',
     commandName: 'install',
-    commandExplanation: 'The --legacy-bundling flag uses npm v2 installation style where all dependencies are installed flat. Useful for compatibility with older tools.',
+    commandExplanation: 'The --install-strategy=nested installs packages in place without hoisting, creating a nested structure like npm v2. Replaces deprecated --legacy-bundling.',
   });
 
-  // GROUP 5: Script and audit options
+  tasks.push({
+    id: taskId++,
+    title: 'Install versions before date',
+    description: 'Install lodash package versions available before specific date 2023-01-01',
+    expectedCommand: 'npm install lodash --before=2023-01-01',
+    hint: 'Use --before flag with date',
+    commandName: 'install',
+    commandExplanation: 'The --before flag installs only versions published before the specified date. Useful for reproducing builds from a specific point in time.',
+  });
+
+  // GROUP 12: Script and audit options
   tasks.push({
     id: taskId++,
     title: 'Install without running scripts',
@@ -613,36 +872,26 @@ export function generateTasks(): Task[] {
 
   tasks.push({
     id: taskId++,
-    title: 'Install without audit',
-    description: 'Install packages without checking for vulnerabilities',
+    title: 'Install lodash without audit',
+    description: 'Install lodash without checking for vulnerabilities',
     expectedCommand: 'npm install lodash --no-audit',
     hint: 'Use --no-audit flag',
     commandName: 'install',
     commandExplanation: 'The --no-audit flag skips the security audit that normally runs after install. Speeds up installation but you won\'t see vulnerability warnings.',
   });
 
-  // GROUP 6: Dry run and production
+  // GROUP 13: Dry run and production
   tasks.push({
     id: taskId++,
-    title: 'Dry run installation',
-    description: 'Preview what would be installed without actually installing',
+    title: 'Dry run express installation',
+    description: 'Preview what would be installed for express without actually installing',
     expectedCommand: 'npm install express --dry-run',
     hint: 'Use --dry-run flag',
     commandName: 'install',
     commandExplanation: 'The --dry-run flag shows what would happen without making changes. Useful for testing before actual installation.',
   });
 
-  tasks.push({
-    id: taskId++,
-    title: 'Install production dependencies only',
-    description: 'Install only dependencies, skip devDependencies',
-    expectedCommand: 'npm install --omit=dev',
-    hint: 'Use --omit=dev flag',
-    commandName: 'install',
-    commandExplanation: 'The --omit=dev flag installs only production dependencies, skipping devDependencies. Common in production deployments.',
-  });
-
-  // GROUP 7: Workspace options
+  // GROUP 14: Workspace options
   tasks.push({
     id: taskId++,
     title: 'Install in specific workspace',
