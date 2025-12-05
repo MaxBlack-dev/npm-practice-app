@@ -1042,7 +1042,7 @@ export function generateTasks(): Task[] {
   tasks.push({
     id: taskId++,
     title: 'Uninstall with install-links',
-    description: 'Uninstall package that was installed as packed',
+    description: 'Uninstall lodash package that was installed as packed',
     expectedCommand: 'npm uninstall lodash --install-links',
     hint: 'Use --install-links flag',
     commandName: 'uninstall',
@@ -1064,7 +1064,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'Removes node_modules and does a clean install from package-lock.json. Faster and more reliable than npm install in CI/CD.',
   });
 
-  // Configuration flags (in documentation order)
+  // Configuration flags (in exact documentation order)
   // 1. install-strategy
   tasks.push({
     id: taskId++,
@@ -1076,29 +1076,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --install-strategy flag controls how dependencies are installed during clean install.',
   });
 
-  // 2. legacy-bundling
-  tasks.push({
-    id: taskId++,
-    title: 'Clean install with legacy bundling',
-    description: 'Use npm ci with npm v2 bundling behavior',
-    expectedCommand: 'npm ci --legacy-bundling',
-    hint: 'Use --legacy-bundling flag (deprecated, use --install-strategy=nested)',
-    commandName: 'ci',
-    commandExplanation: 'The --legacy-bundling flag uses npm v2 installation style. Deprecated in favor of --install-strategy=nested.',
-  });
-
-  // 3. global-style
-  tasks.push({
-    id: taskId++,
-    title: 'Clean install with global style',
-    description: 'Use npm ci with global-style installation',
-    expectedCommand: 'npm ci --global-style',
-    hint: 'Use --global-style flag (deprecated, use --install-strategy=shallow)',
-    commandName: 'ci',
-    commandExplanation: 'The --global-style flag installs only direct dependencies at top level. Deprecated in favor of --install-strategy=shallow.',
-  });
-
-  // 4. omit
+  // 2. omit
   tasks.push({
     id: taskId++,
     title: 'Clean install omitting dev dependencies',
@@ -1109,7 +1087,18 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --omit flag skips certain dependency types. Common in production deployments.',
   });
 
-  // 5. strict-peer-deps
+  // 3. include
+  tasks.push({
+    id: taskId++,
+    title: 'Clean install including dev dependencies',
+    description: 'Run npm ci and explicitly include dev dependencies',
+    expectedCommand: 'npm ci --include=dev',
+    hint: 'Use --include=prod, --include=dev, --include=optional, or --include=peer',
+    commandName: 'ci',
+    commandExplanation: 'The --include flag explicitly includes certain dependency types. Inverse of --omit.',
+  });
+
+  // 4. strict-peer-deps
   tasks.push({
     id: taskId++,
     title: 'Clean install with strict peer deps',
@@ -1120,7 +1109,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --strict-peer-deps flag causes npm ci to fail on peer dependency conflicts.',
   });
 
-  // 6. foreground-scripts
+  // 5. foreground-scripts
   tasks.push({
     id: taskId++,
     title: 'Clean install with foreground scripts',
@@ -1131,7 +1120,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --foreground-scripts flag runs lifecycle scripts in the foreground with full output.',
   });
 
-  // 7. ignore-scripts
+  // 6. ignore-scripts
   tasks.push({
     id: taskId++,
     title: 'Clean install without running scripts',
@@ -1142,7 +1131,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --ignore-scripts flag prevents npm from running install scripts. Useful for security.',
   });
 
-  // 8. audit
+  // 7. audit
   tasks.push({
     id: taskId++,
     title: 'Clean install without audit',
@@ -1153,18 +1142,18 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-audit flag skips the security audit during clean install.',
   });
 
-  // 9. dry-run
+  // 8. bin-links
   tasks.push({
     id: taskId++,
-    title: 'Dry run clean install',
-    description: 'Preview what npm ci would do without making changes',
-    expectedCommand: 'npm ci --dry-run',
-    hint: 'Use --dry-run flag',
+    title: 'Clean install without bin links',
+    description: 'Run npm ci without creating symlinks for executables',
+    expectedCommand: 'npm ci --no-bin-links',
+    hint: 'Use --no-bin-links flag',
     commandName: 'ci',
-    commandExplanation: 'The --dry-run flag shows what would happen without actually performing the clean install.',
+    commandExplanation: 'The --no-bin-links flag prevents npm from creating symlinks for package executables.',
   });
 
-  // 10. fund
+  // 9. fund
   tasks.push({
     id: taskId++,
     title: 'Clean install without funding info',
@@ -1173,6 +1162,17 @@ export function generateTasks(): Task[] {
     hint: 'Use --no-fund flag',
     commandName: 'ci',
     commandExplanation: 'The --no-fund flag suppresses funding messages during clean install.',
+  });
+
+  // 10. dry-run
+  tasks.push({
+    id: taskId++,
+    title: 'Dry run clean install',
+    description: 'Preview what npm ci would do without making changes',
+    expectedCommand: 'npm ci --dry-run',
+    hint: 'Use --dry-run flag',
+    commandName: 'ci',
+    commandExplanation: 'The --dry-run flag shows what would happen without actually performing the clean install.',
   });
 
   // 11. workspace
@@ -1206,6 +1206,17 @@ export function generateTasks(): Task[] {
     hint: 'Use --include-workspace-root with --workspaces',
     commandName: 'ci',
     commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces with npm ci.',
+  });
+
+  // 14. install-links
+  tasks.push({
+    id: taskId++,
+    title: 'Clean install with install links',
+    description: 'Pack and install file: protocol dependencies instead of symlinking',
+    expectedCommand: 'npm ci --install-links',
+    hint: 'Use --install-links flag',
+    commandName: 'ci',
+    commandExplanation: 'The --install-links flag makes npm pack and install file: protocol dependencies as regular dependencies instead of creating symlinks.',
   });
   // ========== END CI TASKS ==========
 
@@ -1267,29 +1278,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --install-strategy flag controls how dependencies are organized during update.',
   });
 
-  // 4. legacy-bundling
-  tasks.push({
-    id: taskId++,
-    title: 'Update with legacy bundling',
-    description: 'Update packages with npm v2 bundling behavior',
-    expectedCommand: 'npm update --legacy-bundling',
-    hint: 'Use --legacy-bundling flag (deprecated, use --install-strategy=nested)',
-    commandName: 'update',
-    commandExplanation: 'The --legacy-bundling flag uses npm v2 installation style during update. Deprecated.',
-  });
-
-  // 5. global-style
-  tasks.push({
-    id: taskId++,
-    title: 'Update with global style',
-    description: 'Update with only direct dependencies at top level',
-    expectedCommand: 'npm update --global-style',
-    hint: 'Use --global-style flag (deprecated, use --install-strategy=shallow)',
-    commandName: 'update',
-    commandExplanation: 'The --global-style flag installs only direct deps at top-level during update. Deprecated.',
-  });
-
-  // 6. omit
+  // 4. omit
   tasks.push({
     id: taskId++,
     title: 'Update omitting dev dependencies',
@@ -1300,7 +1289,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --omit flag skips updating certain dependency types.',
   });
 
-  // 7. include
+  // 5. include
   tasks.push({
     id: taskId++,
     title: 'Update including optional dependencies',
@@ -1311,7 +1300,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --include flag specifies dependency types to include in update.',
   });
 
-  // 8. strict-peer-deps
+  // 6. strict-peer-deps
   tasks.push({
     id: taskId++,
     title: 'Update with strict peer deps',
@@ -1322,7 +1311,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --strict-peer-deps flag causes npm update to fail on peer dependency conflicts.',
   });
 
-  // 9. package-lock
+  // 7. package-lock
   tasks.push({
     id: taskId++,
     title: 'Update without package-lock',
@@ -1333,7 +1322,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-package-lock flag prevents npm from updating package-lock.json.',
   });
 
-  // 10. foreground-scripts
+  // 8. foreground-scripts
   tasks.push({
     id: taskId++,
     title: 'Update with foreground scripts',
@@ -1344,7 +1333,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --foreground-scripts flag runs lifecycle scripts in the foreground during update.',
   });
 
-  // 11. ignore-scripts
+  // 9. ignore-scripts
   tasks.push({
     id: taskId++,
     title: 'Update without running scripts',
@@ -1355,7 +1344,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --ignore-scripts flag prevents npm from running install scripts during update.',
   });
 
-  // 12. audit
+  // 10. audit
   tasks.push({
     id: taskId++,
     title: 'Update without audit',
@@ -1366,7 +1355,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-audit flag skips the security audit during update.',
   });
 
-  // 13. before
+  // 11. before
   tasks.push({
     id: taskId++,
     title: 'Update to versions before date',
@@ -1377,7 +1366,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --before flag only updates to versions published before the specified date.',
   });
 
-  // 14. bin-links
+  // 12. bin-links
   tasks.push({
     id: taskId++,
     title: 'Update without bin links',
@@ -1388,7 +1377,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-bin-links flag prevents npm from creating symlinks for binaries during update.',
   });
 
-  // 15. fund
+  // 13. fund
   tasks.push({
     id: taskId++,
     title: 'Update without funding info',
@@ -1399,7 +1388,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --no-fund flag suppresses funding messages during update.',
   });
 
-  // 16. dry-run
+  // 14. dry-run
   tasks.push({
     id: taskId++,
     title: 'Dry run update',
@@ -1410,7 +1399,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --dry-run flag shows what would happen without actually updating packages.',
   });
 
-  // 17. workspace
+  // 15. workspace
   tasks.push({
     id: taskId++,
     title: 'Update in specific workspace',
@@ -1421,7 +1410,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --workspace (-w) flag updates packages in a specific workspace within a monorepo.',
   });
 
-  // 18. workspaces
+  // 16. workspaces
   tasks.push({
     id: taskId++,
     title: 'Update all workspaces',
@@ -1432,7 +1421,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --workspaces flag updates packages in all workspaces defined in your monorepo.',
   });
 
-  // 19. include-workspace-root
+  // 17. include-workspace-root
   tasks.push({
     id: taskId++,
     title: 'Update workspaces including root',
@@ -1443,7 +1432,7 @@ export function generateTasks(): Task[] {
     commandExplanation: 'The --include-workspace-root flag includes the workspace root when using --workspaces.',
   });
 
-  // 20. install-links
+  // 18. install-links
   tasks.push({
     id: taskId++,
     title: 'Update with install-links',
@@ -4162,24 +4151,6 @@ export function generateTasks(): Task[] {
     hint: 'Use --install-strategy=linked flag',
     commandName: 'dedupe',
     commandExplanation: 'The --install-strategy=linked flag uses experimental linked installation.',
-  });
-  tasks.push({
-    id: taskId++,
-    title: 'Dedupe with legacy bundling',
-    description: 'Use legacy-bundling flag',
-    expectedCommand: 'npm dedupe --legacy-bundling',
-    hint: 'Use --legacy-bundling flag (deprecated)',
-    commandName: 'dedupe',
-    commandExplanation: 'The --legacy-bundling flag installs without hoisting (deprecated, use --install-strategy=nested).',
-  });
-  tasks.push({
-    id: taskId++,
-    title: 'Dedupe with global style',
-    description: 'Use global-style flag',
-    expectedCommand: 'npm dedupe --global-style',
-    hint: 'Use --global-style flag (deprecated)',
-    commandName: 'dedupe',
-    commandExplanation: 'The --global-style flag installs only direct deps at top-level (deprecated, use --install-strategy=shallow).',
   });
   tasks.push({
     id: taskId++,
