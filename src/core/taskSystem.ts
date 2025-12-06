@@ -1732,6 +1732,16 @@ export function generateTasks(): Task[] {
     commandExplanation: 'Scans your dependencies for known security vulnerabilities and shows a report.',
   });
 
+  tasks.push({
+    id: taskId++,
+    title: 'Fix security vulnerabilities',
+    description: 'Automatically fix vulnerable dependencies',
+    expectedCommand: 'npm audit fix',
+    hint: 'Installs compatible updates to fix vulnerabilities',
+    commandName: 'audit',
+    commandExplanation: 'Automatically installs compatible updates to resolve security vulnerabilities found in dependencies.',
+  });
+
   // Configuration flags (in documentation order)
   // 1. audit-level
   tasks.push({
