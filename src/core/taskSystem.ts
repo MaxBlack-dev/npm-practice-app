@@ -1935,7 +1935,7 @@ export function generateTasks(): Task[] {
   tasks.push({
     id: taskId++,
     title: 'Run script with arguments',
-    description: 'Run test script with --grep flag',
+    description: 'Run test script with --grep flag and pattern as value',
     expectedCommand: 'npm run test -- --grep="pattern"',
     hint: 'Use -- to pass arguments to the script',
     commandName: 'run',
@@ -2253,7 +2253,7 @@ export function generateTasks(): Task[] {
   tasks.push({
     id: taskId++,
     title: 'Install exact version and test',
-    description: 'Install with exact version then test',
+    description: 'Install lodash with exact version then test',
     expectedCommand: 'npm install-test lodash --save-exact',
     hint: 'Use --save-exact for pinned versions',
     commandName: 'install-test',
