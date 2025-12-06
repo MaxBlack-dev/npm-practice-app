@@ -1716,17 +1716,6 @@ export function generateTasks(): Task[] {
     commandName: 'outdated',
     commandExplanation: 'The --workspace (-w) flag checks for outdated packages in a specific workspace.',
   });
-
-  // 8. workspaces
-  tasks.push({
-    id: taskId++,
-    title: 'Check all workspaces',
-    description: 'Show outdated packages in every workspace',
-    expectedCommand: 'npm outdated --workspaces',
-    hint: 'Use --workspaces flag',
-    commandName: 'outdated',
-    commandExplanation: 'The --workspaces flag checks for outdated packages in all workspaces.',
-  });
   // ========== END OUTDATED TASKS ==========
 
   // ========== COMPREHENSIVE AUDIT COMMAND TASKS ==========
