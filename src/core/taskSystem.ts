@@ -1742,6 +1742,16 @@ export function generateTasks(): Task[] {
     commandExplanation: 'Automatically installs compatible updates to resolve security vulnerabilities found in dependencies.',
   });
 
+  tasks.push({
+    id: taskId++,
+    title: 'Verify package signatures',
+    description: 'Verify registry signatures of downloaded packages',
+    expectedCommand: 'npm audit signatures',
+    hint: 'Checks registry signatures and provenance attestations',
+    commandName: 'audit',
+    commandExplanation: 'Verifies the registry signatures and provenance attestations of downloaded packages to ensure integrity.',
+  });
+
   // Configuration flags (in documentation order)
   // 1. audit-level
   tasks.push({
